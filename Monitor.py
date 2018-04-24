@@ -18,7 +18,10 @@ while True:
 #     print "First Loop"
     for p in range (0,len(pl)):
         temp = MyProcess()
-        temp.Process(psutil.Process(pl[p]))
+        try:
+            temp.Process(psutil.Process(pl[p]))
+        except psutil.NoSuchProcess:
+            pass
         List1.append(temp)
         file1.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
         file1.write("\r\n")
@@ -30,7 +33,10 @@ while True:
 #     print "Second Loop"
     for p in range (0,len(pl)):
         temp = MyProcess()
-        temp.Process(psutil.Process(pl[p]))    
+        try:
+            temp.Process(psutil.Process(pl[p]))
+        except psutil.NoSuchProcess:
+            pass
         List2.append(temp)
         file2.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
         file2.write("\r\n")
