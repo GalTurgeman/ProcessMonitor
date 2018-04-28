@@ -1,39 +1,43 @@
 from Tkinter import *
 
-def donothing():
-   filewin = Toplevel(root)
-   button = Button(filewin, text="Do nothing button")
-   button.pack()
-   
-root = Tk()
-menubar = Menu(root)
-filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="New", command=donothing)
-filemenu.add_command(label="Open", command=donothing)
-filemenu.add_command(label="Save", command=donothing)
-filemenu.add_command(label="Save as...", command=donothing)
-filemenu.add_command(label="Close", command=donothing)
+import psutil,time,tkMessageBox as box
+from time import strftime,localtime,sleep
 
-filemenu.add_separator()
+# from test1 import MonitorMode
+# import Tkinter as Tk
 
-filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(label="File", menu=filemenu)
-editmenu = Menu(menubar, tearoff=0)
-editmenu.add_command(label="Undo", command=donothing)
+def MainWindow(bool):
+    if(bool):
+        Mwindow = Tk()
+        Mwindow.title('Proceess Monitor')
+        frame = Frame(Mwindow)
+        btn = Button(frame, text = 'Start monitor mode',command = box.showinfo("GOOD","GOOD") )
+        btn.pack(side = RIGHT , padx =5)
+        frame.pack(padx=200,pady = 50)
+        
+def dialog1():
+    username=entry1.get()
+    password = entry2.get()
+    if (username == 'admin' and  password == 'admin'):
+        box.showinfo('info','Correct Login')
+        MainWindow(True)
+        window.destroy()
+    else:
+        box.showinfo('info','Invalid Login')
 
-editmenu.add_separator()
+window = Tk()
+window.title('Login')
+frame = Frame(window)
+Label1 = Label(window,text = 'Username:')
+Label1.pack(padx=15,pady= 5)
+entry1 = Entry(window,bd =5)
+entry1.pack(padx=15, pady=5)
+Label2 = Label(window,text = 'Password: ')
+Label2.pack(padx = 15,pady=6)
+entry2 = Entry(window, bd=5)
+entry2.pack(padx = 15,pady=7)
+btn = Button(frame, text = 'Check Login',command = dialog1)
+btn.pack(side = RIGHT , padx =5)
+frame.pack(padx=200,pady = 50)
+window.mainloop()
 
-editmenu.add_command(label="Cut", command=donothing)
-editmenu.add_command(label="Copy", command=donothing)
-editmenu.add_command(label="Paste", command=donothing)
-editmenu.add_command(label="Delete", command=donothing)
-editmenu.add_command(label="Select All", command=donothing)
-
-menubar.add_cascade(label="Edit", menu=editmenu)
-helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Help Index", command=donothing)
-helpmenu.add_command(label="About...", command=donothing)
-menubar.add_cascade(label="Help", menu=helpmenu)
-
-root.config(menu=menubar)
-root.mainloop()
