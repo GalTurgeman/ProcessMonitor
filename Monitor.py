@@ -1,7 +1,4 @@
-'Created on 24 Apr 2018
 
-@author: gal
-''
 import psutil
 import time
 from time import strftime,localtime,sleep
