@@ -1,59 +1,79 @@
-'''
-Created on 16 Apr 2018
+Created on 24 Apr 2018
 
 @author: gal
 '''
 import psutil
-from Process import MyProcess
-from time import sleep, localtime,strftime
+import time
+from time import strftime,localtime,sleep
+import base64
 
-file1 = open('/Users/gal/Desktop/old.csv','w')#First Sample
-file2 = open('/Users/gal/Desktop/new.csv','w')#Second Sample
+    
+def MonitorMode(x):
+    try:
+        print "Start Scanning\n______________________________________________________________________"
+        while True:
+            dict1 = {}
+            for p in psutil.process_iter():
+                dict1[p.pid] = p.name(), p.status(), p.create_time()
+                with open("process_list.csv", "a") as process_list:
+    #                 process_list.write(str(p.pid) + "," + p.name() + "," + strftime("%Y-%m-%d %H:%M:%S", localtime())+","+p.status())
+    #                 process_list.write("\r\n")
+                    process_list.write(base64.b64encode(str(p.pid) + "," + p.name() + "," + strftime("%Y-%m-%d %H:%M:%S", localtime())+","+p.status()))
+                    process_list.write("\r\n")
+            dict2 = {}
+            sleep(x)
+            for p in psutil.process_iter():
+                dict2[p.pid] = p.name(), p.status(), p.create_time()
+                with open("process_list.csv", "a") as process_list:
+    #                 process_list.write(str(p.pid) + "," + p.name()+"," + strftime("%Y-%m-%d %H:%M:%S", localtime())+","+p.status() )
+    #                 process_list.write("\r\n")
+                    process_list.write(base64.b64encode(str(p.pid) + "," + p.name() + "," + strftime("%Y-%m-%d %H:%M:%S", localtime())+","+p.status()))
+                    process_list.write("\r\n")
+        
+            value = {k: dict2[k] for k in set(dict2) - set(dict1)}
+            if (value):
+                for key, value1 in value.items():
+                    with open("Status_Log_File.csv", "a") as status_log:
+                        name, status, time = value1
+                        print str(key) + "," + name + "," +  "opened" + "," +strftime("%Y-%m-%d %H:%M:%S", localtime())
+                        status_log.write(base64.b64encode(str(key) + "," + name + "," +  "opened" + "," +strftime("%Y-%m-%d %H:%M:%S", localtime())))
+                        status_log.write("\r\n")
+            value = {k: dict1[k] for k in set(dict1) - set(dict2)}
+            if (value):
+                for key, value1 in value.items():
+                    with open("Status_Log_File.csv", "a") as status_log:
+                        name, status, time = value1
+                        print str(key) + "," + name + "," +  "closed" + "," +strftime("%Y-%m-%d %H:%M:%S", localtime())
+                        status_log.write(base64.b64encode(str(key) + "," + name + "," +  "closed" + "," +strftime("%Y-%m-%d %H:%M:%S", localtime())))
+                        status_log.write("\r\n")
+    except KeyboardInterrupt:
+        print "\n Interrupted!\n"
+            
+def DecodeMode():
+    with open("process_list.csv") as process_list:
+        process_list_Decode = open("process_list_Decode.csv","a")
+        l=process_list.readlines()
+        for i in l: 
+            process_list_Decode.write(base64.b64decode(i))
+            process_list_Decode.write("\r\n")
+    with open("Status_Log_File.csv") as Status_Log_File:
+        Status_Log_File_Decode = open("Status_Log_File_Decode.csv","a")
+        l=Status_Log_File.readlines()
+        for i in l: 
+            Status_Log_File_Decode.write(base64.b64decode(i))
+            Status_Log_File_Decode.write("\r\n")
+    
+def main():
+    print "-----------Process Monitor-----------"
+    try:
+        x = input("For Monitor Mode press 1 | For decode Mode press 2  | regular Keyboard Interrupt for quit\n")
+        if(x == 1):
+            MonitorMode(5)  
+        if(x == 2):
+            DecodeMode()
+    except KeyboardInterrupt:
+        print "\n Interrupted!\n"            
+        
+if __name__ == '__main__':
+    main()
 
-List1 = []
-List2 = []
-
-while True:
-    pl = psutil.pids()
-#     print "First Loop"
-    for p in range (0,len(pl)):
-        temp = MyProcess()
-        try:
-            temp.Process(psutil.Process(pl[p]))
-        except psutil.NoSuchProcess:
-            pass
-        List1.append(temp)
-        file1.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
-        file1.write("\r\n")
-        with open("/Users/gal/Desktop/Process_List_File.csv", "a") as Process_List_File: #All Samples!
-            Process_List_File.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
-            Process_List_File.write("\r\n")
-    sleep(2)
-    pl = psutil.pids()
-#     print "Second Loop"
-    for p in range (0,len(pl)):
-        temp = MyProcess()
-        try:
-            temp.Process(psutil.Process(pl[p]))
-        except psutil.NoSuchProcess:
-            pass
-        List2.append(temp)
-        file2.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
-        file2.write("\r\n")
-        with open("/Users/gal/Desktop/Process_List_File.csv", "a") as Process_List_File: #All Samples!
-            Process_List_File.write(temp.getPid()+","+temp.getName()+","+temp.getCTime()+","+temp.getStatus())
-            Process_List_File.write("\r\n")   
-    for l in List1:
-        if l not in List2:
-#             print "Closed Loop"
-            print l.getName()+","+l.getPid()+","+l.getCTime()+","+"Closed"+","+"Time: "+strftime("%X ", localtime())
-            with open("/Users/gal/Desktop/Status_Log_File.csv", "a") as Status_Log_File: #Changes!
-                Status_Log_File.write(l.getName()+","+l.getPid()+","+l.getCTime()+","+"Closed")
-                Status_Log_File.write("\r\n")
-    for q in List2:
-        if q not in List1:
-#             print "Opened Loop"
-            print q.getName()+","+q.getPid()+","+q.getCTime()+","+"Closed"+","+"Time: "+strftime("%X ", localtime())
-            with open("/Users/gal/Desktop/Status_Log_File.csv", "a") as Status_Log_File: #Changes!
-                Status_Log_File.writelines (q.getName()+","+q.getPid()+","+q.getCTime()+","+"Opened")
-                Status_Log_File.write("\r\n")
