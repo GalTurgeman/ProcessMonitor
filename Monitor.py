@@ -47,19 +47,25 @@ def MonitorMode(x):
         print "\n Interrupted!\n"
             
 def DecodeMode():
-    with open("process_list.csv") as process_list:
-        process_list_Decode = open("process_list_Decode.csv","a")
-        l=process_list.readlines()
-        for i in l: 
-            process_list_Decode.write(base64.b64decode(i))
-            process_list_Decode.write("\r\n")
-    with open("Status_Log_File.csv") as Status_Log_File:
-        Status_Log_File_Decode = open("Status_Log_File_Decode.csv","a")
-        l=Status_Log_File.readlines()
-        for i in l: 
-            Status_Log_File_Decode.write(base64.b64decode(i))
-            Status_Log_File_Decode.write("\r\n")
-    
+    try:
+        with open("process_list.csv") as process_list:
+            process_list_Decode = open("process_list_Decode.csv","a")
+            l=process_list.readlines()
+            for i in l: 
+                process_list_Decode.write(base64.b64decode(i))
+                process_list_Decode.write("\r\n")
+    except OSError:
+        print "\There is no encode file for processList!\n"
+    try:
+        with open("Status_Log_File.csv") as Status_Log_File:
+            Status_Log_File_Decode = open("Status_Log_File_Decode.csv","a")
+            l=Status_Log_File.readlines()
+            for i in l: 
+                Status_Log_File_Decode.write(base64.b64decode(i))
+                Status_Log_File_Decode.write("\r\n")
+    except OSError:
+        print "\There is no encode file for Status_Log!\n"
+        
 def main():
     print "-----------Process Monitor-----------"
     try:
