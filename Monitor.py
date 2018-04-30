@@ -2,7 +2,8 @@
 import psutil,time,base64,datetime,os,platform
 from time import strftime,localtime,sleep
  
-
+global flag
+flag = False
 def validate(date_text):
     try:
         datetime.datetime.strptime(date_text, '%Y-%m-%d %H:%M:%S')
@@ -12,7 +13,8 @@ def validate(date_text):
     
 def MonitorMode(x):
     try:
-        print('Start Scanning\n______________________________________________________________________')
+#         ClearScreen()
+#         PrintScan()
         while True:
             dict1 = {}
             for p in psutil.process_iter():
@@ -49,7 +51,7 @@ def MonitorMode(x):
                         status_log.write(base64.b64encode(str(key) + "," + name + "," +  "closed" + "," +strftime("%Y-%m-%d %H:%M:%S", localtime())))
                         status_log.write("\r\n")
     except KeyboardInterrupt:
-        print ("\n Back to main!\n")
+        ClearScreen()
         main()
             
 def DecodeMode():
@@ -85,13 +87,14 @@ def DecodeMode():
     
         
 def ManualMonitor():
+#     ClearScreen()
+#     try:
     user_input1 = raw_input("Enter First time in format  YYYY-MM-DD HH:MM:SS\nExample:2018-04-29 21:39:46 \n")
     validate(user_input1)
     user_input2 = raw_input("Enter Second time same format: \n")
     validate(user_input2)
     dict1={}
     dict2={}
-
     with open("process_list_Decode.csv") as f:
         for line in f:
             if user_input1 in line:
@@ -102,8 +105,8 @@ def ManualMonitor():
             if user_input2 in line:
                 s= line.split(",")
                 dict2[s[0]] = s[1] #dict[pid] = process_name
-#     print dict1
-#     print dict2
+        #     print dict1
+        #     print dict2
     value = {k: dict2[k] for k in set(dict2) - set(dict1)}
     if (value):
         with open("Status_Log_File_Manual.csv", "w+") as status_log:
@@ -112,7 +115,7 @@ def ManualMonitor():
                 name = value1
                 print (str(key) + "," + name + "," +  "opened")
                 status_log.write(base64.b64encode(str(key) + "," + name + "," +  "opened"))
-                    
+                        
     value = {k: dict1[k] for k in set(dict1) - set(dict2)}
     if (value):
         with open("Status_Log_File_Manual.csv", "w+") as status_log:
@@ -121,7 +124,10 @@ def ManualMonitor():
                 name = value1
                 print (str(key) + "," + name + "," +  "closed")
                 status_log.write(base64.b64encode(str(key) + "," + name + "," +  "closed"))
-                
+#     except KeyboardInterrupt:
+#         ClearScreen()
+#         main()      
+          
 def readNumber(x):
     try:
         return int(x) # raw_input in Python 2.x
@@ -136,53 +142,73 @@ def isItExit(x):
         pass
     
 def Auth(user,password):
+    global flag
+    flag = False
     mine = base64.b64encode(password)
     mine2 = base64.b64encode(user)
     if(mine2 =="QWRtaW4=" and mine == "UHIwMGNlNTVNMG4hNzBS"):
-        print ("Success!")
+        print ("Success!\n")
+        flag = True
     return mine2 =="QWRtaW4=" and mine == "UHIwMGNlNTVNMG4hNzBS"
+
 def DeleteFiles():
     if platform.system() == "Windows":
         os.system("del *.csv")
     else:
         os.system("rm *.csv")
-     
+def ClearScreen():
+    if(platform.system()=="Windows"):
+        os.system("cls")
+    else:
+        os.system("clear")
+def PrintBye():
+    if(platform.system()=="Windows"):
+        os.system("cls")
+        os.system("type goodbye.txt")
+    else:
+        os.system("clear")
+        os.system("cat goodbye.txt")  
+def PrintArt():
+    if(platform.system()=="Windows"):
+        os.system("cls")
+        os.system("type art.txt")
+    else:
+        os.system("clear")
+        os.system("cat art.txt")
+def PrintScan():
+    if(platform.system()=="Windows"):
+        os.system("cls")
+        os.system("type scan.txt")
+    else:
+        os.system("clear")
+        os.system("cat scan.txt")
 def main():
-    print ("-----------Process Monitor-----------")
+#     ClearScreen()
+#     PrintArt()
     counter = 0
-    try:
-        user = raw_input("Enter user name:\n")
-        password = raw_input("Enter password:\n")
-        if not Auth(user, password):
-            while(counter < 3):
-                print "Wrong username or password, try again. "
-                print Auth(user, password)
-                counter+=1
-                user = raw_input("Enter user name:\n")
-                password = raw_input("Enter password:\n")
-                if(counter == 2):
-                    print "Too much tries, bye-bye!"
-                    if(platform.system()=="Windows"):
-                        os.system("type Bye.txt")
-                    else:
-                        os.system("cat Bye.txt") 
-                    exit()
-                if(Auth(user, password)):
-                    counter = 4
+    try: 
+        if(flag==False):
+            user = raw_input("Enter user name:\n")
+            password = raw_input("Enter password:\n")
+            if not(Auth(user, password)):
+                while(counter < 3):
+                    print "Wrong username or password, try again. \n\n"
+                    counter+=1
+                    user = raw_input("Enter user name:\n")
+                    password = raw_input("Enter password:\n")
+                    if(counter == 2):
+                        print "Too much tries, bye-bye!"
+                        PrintBye()
+                        exit()
+                    if(Auth(user, password)):
+                        counter = 4
+                
     except KeyboardInterrupt:
-        if(platform.system()=="Windows"):
-            os.system("type Bye.txt")
-        else:
-            os.system("cat Bye.txt") 
+        PrintBye()
         exit()
     while(True):
         try:
-            if(platform.system()=="Windows"):
-                os.system("cls")
-                os.system("type art.txt")
-            else:
-                os.system("clear")
-                os.system("cat art.txt")
+#             PrintArt()
             x = raw_input("(*)For Monitor Mode press 1 \n(*)For Decode Mode press 2 \n(*)For Manual Mode press 3\n(*)Delete all files press 4\n(*)For quit exit() or ctr+c\n")
             if (readNumber(x)):
                 if(int(x) == 1):
@@ -202,11 +228,7 @@ def main():
             else:
                 print "Invalid input, try again!"
         except KeyboardInterrupt:
-            print ("\n Bye Bye!\n")
-            if(platform.system()=="Windows"):
-                os.system("type Bye.txt")
-            else:
-                os.system("cat Bye.txt") 
+            PrintBye() 
             exit()           
         
 if __name__ == '__main__':
