@@ -150,25 +150,31 @@ def DeleteFiles():
 def main():
     print ("-----------Process Monitor-----------")
     counter = 0
-    user = raw_input("Enter user name:\n")
-    password = raw_input("Enter password:\n")
-    if not Auth(user, password):
-        while(counter < 3):
-            print "Wrong username or password, try again. "
-            print Auth(user, password)
-            counter+=1
-            user = raw_input("Enter user name:\n")
-            password = raw_input("Enter password:\n")
-            if(counter == 2):
-                print "Too much tries, bye-bye!"
-                if(platform.system()=="Windows"):
-                    os.system("type Bye.txt")
-                else:
-                    os.system("cat Bye.txt") 
-                exit()
-            if(Auth(user, password)):
-                counter = 4
-        
+    try:
+        user = raw_input("Enter user name:\n")
+        password = raw_input("Enter password:\n")
+        if not Auth(user, password):
+            while(counter < 3):
+                print "Wrong username or password, try again. "
+                print Auth(user, password)
+                counter+=1
+                user = raw_input("Enter user name:\n")
+                password = raw_input("Enter password:\n")
+                if(counter == 2):
+                    print "Too much tries, bye-bye!"
+                    if(platform.system()=="Windows"):
+                        os.system("type Bye.txt")
+                    else:
+                        os.system("cat Bye.txt") 
+                    exit()
+                if(Auth(user, password)):
+                    counter = 4
+    except KeyboardInterrupt:
+        if(platform.system()=="Windows"):
+            os.system("type Bye.txt")
+        else:
+            os.system("cat Bye.txt") 
+        exit()
     while(True):
         try:
             if(platform.system()=="Windows"):
