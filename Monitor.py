@@ -57,7 +57,7 @@ def MonitorMode(x):
 def DecodeMode():
     try:
         with open("process_list.csv") as process_list:
-            process_list_Decode = open("process_list_Decode.csv","a")
+            process_list_Decode = open("process_list_Decode.csv","w")#changed to w from a
             l = process_list.readlines()
             for i in l: 
                 process_list_Decode.write(base64.b64decode(i))
@@ -67,7 +67,7 @@ def DecodeMode():
         pass
     try:
         with open("Status_Log_File.csv") as Status_Log_File:
-            Status_Log_File_Decode = open("Status_Log_File_Decode.csv","a")
+            Status_Log_File_Decode = open("Status_Log_File_Decode.csv","w")#Changed to w from a
             l=Status_Log_File.readlines()
             for i in l: 
                 Status_Log_File_Decode.write(base64.b64decode(i))
@@ -77,7 +77,7 @@ def DecodeMode():
         pass
     try:
         with open("Status_Log_File_Manual.csv") as Status_Log_File:
-            Status_Log_File_Decode = open("Status_Log_File_Manual_Decode.csv","w+")
+            Status_Log_File_Decode = open("Status_Log_File_Manual_Decode.csv","w")
             l=Status_Log_File.readlines()
             for i in l: 
                 Status_Log_File_Decode.write(base64.b64decode(i))
@@ -117,7 +117,6 @@ def ManualMonitor():
             for i in decoded_list:
                 time = str(i).split(",")
                 time_list = time[1]
-
 
 
         # rounding user input 1 & 2 time
